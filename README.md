@@ -4,6 +4,9 @@
 
 For example, to generate a slab model that includes CO and H2O:
 ```
+import iris as iris
+import numpy as np
+
 # fine wavelength grid (in micron) to evaluate opacities
 fine_wgrid = np.arange(4.7,8.6,6e-5)
 # wavelength grid (in micron) to downsample
