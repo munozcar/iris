@@ -2,7 +2,7 @@
 
 <img src="https://github.com/munozcar/IRIS/assets/32044135/c045b724-755e-4f9e-b086-308ff66c098d"  width="150" height="190">
 
-Example:
+For example, to generate a slab model that includes CO and H2O:
 ```
 # fine wavelength grid (in micron) to evaluate opacities
 fine_wgrid = np.arange(4.7,8.6,6e-5)
@@ -31,3 +31,7 @@ slab.setup_disk(distance, T_ex, N_mol, A_au, dV)
 slab.setup_grid(fine_wgrid, obs_wgrid, R)
 slab.simulate()
 ```
+
+<img src="https://github.com/munozcar/IRIS/assets/32044135/b1b92e02-1c82-4144-8398-b557075c2c02"  width="600" height="200">
+
+
