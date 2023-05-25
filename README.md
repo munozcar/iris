@@ -9,7 +9,8 @@ treatment that accounts for overlapping lines and saturation effects. IRIS is ve
 
 One can use either a single slab, or a set of slabs to reproduce the effects of radial temperature and density gradients in the disk.
 
-For example, to model emission from CO and H2O using one slab for each:
+#### Examples:
+To model emission from CO and H2O using one slab for each:
 ```
 import iris as iris
 import numpy as np
