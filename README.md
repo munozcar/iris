@@ -45,6 +45,8 @@ slab = iris.slab(molecules=['CO', 'H2O'], wlow=4.8, whigh=26.0)
 slab.setup_disk(distance, T_ex, N_mol, A_au, dV)
 slab.setup_grid(fine_wgrid, obs_wgrid, R)
 slab.simulate()
+
+# Plot slab.downsampled_flux:
 ```
 
 <img src="https://github.com/munozcar/IRIS/assets/32044135/b1b92e02-1c82-4144-8398-b557075c2c02"  width="600" height="200">
