@@ -5,11 +5,11 @@ IRIS is a Python package that simulates IR and mid-IR molecular line emission fr
 <img align="left" src="https://github.com/munozcar/IRIS/assets/32044135/c045b724-755e-4f9e-b086-308ff66c098d"  width="150" height="190">
 
 The emission lines are modeled using isothermal slabs, with a detailed wavelength-dependent opacity
-treatment that accounts for overlapping lines and saturation effects.   
+treatment that accounts for overlapping lines and saturation effects. IRIS is vectorized and optimized with jit, i.e. the code is compiled and can be significantly sped-up using GPUs.
 
-The user can use either a single slab, or a set of slabs to reproduce the effects of radial temperature and density gradients.
+One can use either a single slab, or a set of slabs to reproduce the effects of radial temperature and density gradients in the disk.
 
-For example, to generate a slab model that includes CO and H2O:
+For example, to model emission from CO and H2O using one slab for each:
 ```
 import iris as iris
 import numpy as np
