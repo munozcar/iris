@@ -1,5 +1,9 @@
 # IRIS: InfraRed Isothermal Slabs
 
+IRIS is a Python package to simulate IR and mid-IR molecular line emission from protoplanetary disks. 
+The emission lines are modeled using a set of isothermal slabs, with a detailed wavelength-dependent opacity
+that accounts for overlapping lines and saturation.   
+
 <img align="left" src="https://github.com/munozcar/IRIS/assets/32044135/c045b724-755e-4f9e-b086-308ff66c098d"  width="150" height="190">
 
 For example, to generate a slab model that includes CO and H2O:
