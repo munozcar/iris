@@ -27,6 +27,9 @@ obs_wgrid = np.arange(4.8,8.5,0.002)
 R = 3200
 
 # DISK MODEL
+
+distance = 120 # pc
+
 # excitation temperatures in K
 T_ex =  np.array([np.array([600.0]), # for CO
                   np.array([800.0])]) # for H2O
