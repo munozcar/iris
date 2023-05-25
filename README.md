@@ -14,17 +14,17 @@ R = 3200
 
 # DISK MODEL
 # excitation temperatures in K
-T_ex =  np.array([np.array([600.0]),
-                  np.array([800.0])])
+T_ex =  np.array([np.array([600.0]), # for CO
+                  np.array([800.0])]) # for H2O
 # column densities in cm^-2
-N_mol = np.array([np.array([1e17]),
-                  np.array([1e16])])
+N_mol = np.array([np.array([1e17]), # for CO
+                  np.array([1e16])]) # for H2O
 # emitting areas in au^2
-A_au =  np.array([np.array([2.0]),
-                  np.array([1.0])])
+A_au =  np.array([np.array([2.0]), # for CO
+                  np.array([1.0])]) # for H2O
 # intrinsic line widths in km/s
-dV =    np.array([np.array([2.0]),
-                  np.array([2.0])])
+dV =    np.array([np.array([2.0]), # for CO
+                  np.array([2.0])]) # for H2O
 
 # model spectrum
 slab = iris.slab(molecules=['CO', 'H2O'], wlow=4.8, whigh=26.0)
