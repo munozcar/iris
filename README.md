@@ -9,9 +9,7 @@ IRIS is vectorized and optimized with jax, i.e. the code is dynamically compiled
 
 One can use either a single slab, or a set of slabs to reproduce the effects of radial temperature and density gradients in the disk.
 
-Basic package requirements: numpy, scipy, astropy, jax, pandas. Additional package requirements: jaxns, tinyGP, jaxopt. These are needed to do inference with IRIS. 
-
-You need at least 16GB of RAM, and ideally (but not necessarily) a GPU. Please unzip HITRAN.zip before use.
+Basic package requirements: numpy, scipy, astropy, jax, pandas. 
 
 #### Examples:
 To model emission from CO and H2O using one slab for each:
