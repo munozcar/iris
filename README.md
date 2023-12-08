@@ -12,24 +12,27 @@ One can use either a single slab, or a set of slabs to reproduce the effects of 
 Basic package requirements: numpy, scipy, astropy, jax, pandas. 
 
 #### Examples:
-To model emission from CO and H2O using one slab for each:
+To model emission from CO and H2O using a single slab for each:
 ```
 import iris as iris
 import numpy as np
 
-# fine wavelength grid (in micron) to evaluate opacities
+# Define a fine wavelength grid (in micron) to evaluate opacities
 fine_wgrid = np.arange(4.7,8.6,6e-5)
-# wavelength grid (in micron) to downsample
+# Define a wavelength grid (in micron) to downsample the model
 obs_wgrid = np.arange(4.8,8.5,0.002)
-# resolving power 
+# The instrument resolving power 
 R = 3200
 
 # DISK MODEL
 
+# Distance to source
 distance = 120 # pc
 
-# excitation temperatures in K
-T_ex =  np.array([np.array([600.0]), # for CO
+# NOTE that we define an array for the temperature, column density, and area for each species.
+
+# Excitation temperatures for each molecule in K
+T_ex =  np.array([np.array([600.0]), # for CO  
                   np.array([800.0])]) # for H2O
 # column densities in cm^-2
 N_mol = np.array([np.array([1e17]), # for CO
