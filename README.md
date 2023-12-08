@@ -27,6 +27,12 @@ R = 3200
 
 # DISK MODEL
 
+'''Important note: You need to add the molecules in ALPHABETICAL ORDER'''
+'''This is just because of how JAX compiles dictionaries.'''
+'''So here e.g. we add CO before H2O'''
+
+slab = iris.slab(molecules=['CO', 'H2O'], wlow=4.8, whigh=26.0)
+
 # Distance to source
 distance = 120 # pc
 
@@ -47,11 +53,7 @@ dV =    np.array([np.array([2.0]), # for CO
 
 # model spectrum
 
-'''Important note: You need to add the molecules in ALPHABETICAL ORDER'''
-'''This is just because of how JAX compiles dictionaries.'''
-'''So here e.g. we add CO before H2O'''
 
-slab = iris.slab(molecules=['CO', 'H2O'], wlow=4.8, whigh=26.0)
 slab.setup_disk(distance, T_ex, N_mol, A_au, dV)
 slab.setup_grid(fine_wgrid, obs_wgrid, R)
 slab.simulate()
