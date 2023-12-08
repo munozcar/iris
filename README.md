@@ -31,7 +31,10 @@ R = 3200
 '''This is just because of how JAX compiles dictionaries.'''
 '''So here e.g. we add CO before H2O'''
 
-slab = iris.slab(molecules=['CO', 'H2O'], wlow=4.8, whigh=26.0)
+# path to the HITRAN data folder
+path_to_HITRAN = './'
+
+slab = iris.slab(molecules=['CO', 'H2O'], wlow=4.8, whigh=26.0, path_to_hitran=path_to_HITRAN)
 
 # Distance to source
 distance = 120 # pc
