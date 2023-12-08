@@ -1,6 +1,6 @@
 '''
 --------------------------------------------------------------
-iris: (GPU-accelerated) IR spectrum modeling
+IRIS: (GPU-accelerated) IR spectrum modeling
 
 Evaluation of optical depths and intensities is jit-enabled and
 vectorized. 
@@ -15,7 +15,6 @@ import astropy.constants as const
 import jax.numpy as jnp
 import numpy as np
 from functools import partial
-from scipy.integrate import fixed_quad
 
 # -------------------- Global constants ----------------------
 # for more efficient unit handling
@@ -112,6 +111,7 @@ def compute_tau_grid(line_catalog, fine_wgrid, dv, t_ex, n_mol):
     # map over all lines
     func = partial(evaluate_line_tau, fine_wgrid, sigma_lam)
     tau_grid = jax.vmap(func)(tau_cen, line_catalog['ws'])
+    
     # sum opacities
     return  jnp.sum(tau_grid, axis=0)
 compute_tau_grid = jax.jit(compute_tau_grid)

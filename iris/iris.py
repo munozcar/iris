@@ -1,6 +1,6 @@
 '''
 --------------------------------------------------------------
-iris: (GPU-accelerated) IR spectrum modeling
+IRIS: (GPU-accelerated) IR spectrum modeling
 --------------------------------------------------------------
 Developed by Carlos E. Muñoz-Romero (2023)
 '''
@@ -9,15 +9,21 @@ jax.config.update("jax_enable_x64", True)
 import jax.numpy as jnp
 import spectrum as sp
 import numpy as np
-from spectres import spectral_resampling_numba
-from moldata import setup_catalog 
-from scipy.signal import windows
-from scipy.ndimage import gaussian_filter1d
+from moldata import setup_catalog
+from jax.scipy.signal import fftconvolve
 
 class slab:
+    """
+        slab: generate an object to model spectra
+
+        :wlow: shortest wavelength in micron
+        :whigh:  longest wavelength in micron
+        :path_to_hitran: path to folder with HITRAN molecular data
+        
+    """
     def __init__(self, molecules, wlow, whigh, path_to_hitran='./'):
         self.molecules = molecules   
-        self.catalog = setup_catalog(molecules, wlow, whigh, path=path_to_hitran)
+        self.catalog, self.levels = setup_catalog(molecules, wlow, whigh, path=path_to_hitran)
         
     def setup_disk(self, distance, T_ex, N_mol, A_au, dV):
         """
@@ -78,17 +84,17 @@ class slab:
         # set up convolution window
         dw_R = mean_w / self.R
         sigma_conv = dw_R/fine_dw/2.355
-        self.conv_wind = jax.scipy.stats.norm.pdf(jnp.arange(500)-250, scale=sigma_conv)
+        self.conv_wind = jax.scipy.stats.norm.pdf(jnp.arange(2000)-1000, scale=sigma_conv)
                 
     def convolve(self):
         '''
         convolution routine (internal function called by iris.simulate)
         user should not call this directly
         '''
-        self.convolved_flux = jnp.convolve(self.flux_model, self.conv_wind, mode='same')
+        self.convolved_flux = fftconvolve(self.flux_model, self.conv_wind, mode='same')
 
     def downsample(self):
-                '''
+        '''
         downsampling routine (internal function called by iris.simulate)
         user should not call this directly
         '''
@@ -103,6 +109,4 @@ class slab:
         self.convolve()
         # downsample to grid
         self.downsample()
-        
-
 

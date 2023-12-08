@@ -194,6 +194,7 @@ def setup_catalog(molecule_names, wlow, whigh, wpad=0.01, path='./'):
     path_to_moldata = path+'HITRAN/'
     # initialize dictionary
     parameters = {}
+    levels = {}
     
     for mol_name in molecule_names:
         
@@ -202,6 +203,7 @@ def setup_catalog(molecule_names, wlow, whigh, wpad=0.01, path='./'):
         # initialize dictionary
         mol_name = mol_name + '_{}'.format(component_count)
         parameters[mol_name] = {}
+        levels[mol_name] = {}
         
         # read file   
         mol_data = MolData(mol_name.partition('_')[0], path_to_moldata+"data_Hitran_2020_{}.par".format(mol_name.partition('_')[0]))
@@ -210,6 +212,8 @@ def setup_catalog(molecule_names, wlow, whigh, wpad=0.01, path='./'):
         parameters[mol_name]['whigh'] = whigh+wpad
         # strucuture the line information
         parameters[mol_name]['ws'] = np.array([w for w in mol_data.get_table_lines['lam']])[::-1]
+        levels[mol_name]['lev_up'] = np.array([w for w in mol_data.get_table_lines['lev_up']])[::-1]
+        levels[mol_name]['lev_low'] = np.array([w for w in mol_data.get_table_lines['lev_low']])[::-1]
         parameters[mol_name]['aijs'] =  np.array([w for w in mol_data.get_table_lines['a_stein']])[::-1]
         parameters[mol_name]['eups'] = np.array([w for w in mol_data.get_table_lines['e_up']])[::-1] 
         parameters[mol_name]['elow'] = np.array([w for w in mol_data.get_table_lines['e_low']])[::-1] 
@@ -218,6 +222,8 @@ def setup_catalog(molecule_names, wlow, whigh, wpad=0.01, path='./'):
         parameters[mol_name]['nus'] = np.array([w for w in mol_data.get_table_lines['freq']])[::-1] 
         # apply wavelength range
         parameters[mol_name]['aijs'] = parameters[mol_name]['aijs'][(parameters[mol_name]['ws']>parameters[mol_name]['wlow'])*(parameters[mol_name]['ws']<parameters[mol_name]['whigh'])]
+        levels[mol_name]['lev_up'] = levels[mol_name]['lev_up'][(parameters[mol_name]['ws']>parameters[mol_name]['wlow'])*(parameters[mol_name]['ws']<parameters[mol_name]['whigh'])]
+        levels[mol_name]['lev_low'] = levels[mol_name]['lev_low'][(parameters[mol_name]['ws']>parameters[mol_name]['wlow'])*(parameters[mol_name]['ws']<parameters[mol_name]['whigh'])]
         parameters[mol_name]['eups'] = parameters[mol_name]['eups'][(parameters[mol_name]['ws']>parameters[mol_name]['wlow'])*(parameters[mol_name]['ws']<parameters[mol_name]['whigh'])]
         parameters[mol_name]['gups'] = parameters[mol_name]['gups'][(parameters[mol_name]['ws']>parameters[mol_name]['wlow'])*(parameters[mol_name]['ws']<parameters[mol_name]['whigh'])]
         parameters[mol_name]['elow'] = parameters[mol_name]['elow'][(parameters[mol_name]['ws']>parameters[mol_name]['wlow'])*(parameters[mol_name]['ws']<parameters[mol_name]['whigh'])]
@@ -232,4 +238,4 @@ def setup_catalog(molecule_names, wlow, whigh, wpad=0.01, path='./'):
     # de-allocate memory    
     mol_data = None
     
-    return parameters
+    return parameters, levels
