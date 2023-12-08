@@ -36,7 +36,7 @@ slab = iris.slab(molecules=['CO', 'H2O'], wlow=4.8, whigh=26.0)
 # Distance to source
 distance = 120 # pc
 
-# NOTE that we define an array for the temperature, column density, and area for each species.
+# NOTE that we define an ARRAY for the temperature, column density, and area FOR EACH SPECIES.
 
 # Excitation temperatures for each molecule in K
 T_ex =  np.array([np.array([600.0]), # for CO  
