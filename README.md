@@ -13,6 +13,7 @@ Basic package requirements: numpy, scipy, astropy, jax, pandas.
 
 #### Examples:
 To model emission from CO and H2O using a single slab for each:
+
 ```
 import iris as iris
 import numpy as np
@@ -45,6 +46,11 @@ dV =    np.array([np.array([2.0]), # for CO
                   np.array([2.0])]) # for H2O
 
 # model spectrum
+
+'''Important note: You need to add the molecules in ALPHABETICAL ORDER'''
+'''This is just because of how JAX compiles dictionaries.'''
+'''So here e.g. we add CO before H2O'''
+
 slab = iris.slab(molecules=['CO', 'H2O'], wlow=4.8, whigh=26.0)
 slab.setup_disk(distance, T_ex, N_mol, A_au, dV)
 slab.setup_grid(fine_wgrid, obs_wgrid, R)
