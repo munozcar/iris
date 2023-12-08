@@ -44,10 +44,10 @@ mp_cgs = const.m_p.cgs.value
 
 def J_profile(wavelength, t_ex): 
     """
-    J_profile: the full (blackbody) Plack function
+    J_profile: full (blackbody) Plack function
 
     :wavelength: wavelength in micron
-    :t_ex: gas temperature in K
+    :t_ex: temperature in K
     
     :return: blackbody flux density in erg cm-2 s-1 Hz-1 sr-1
     """ 

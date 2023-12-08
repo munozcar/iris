@@ -30,7 +30,7 @@ class slab:
         setup_disk: setup the disk physical structure
 
         :distance: distance to source (float)
-        :T_ex: fine wavelength grid to evaluate tau (array)
+        :T_ex: excitation temperature (array)
         :N_mol: column density in cm^-2 (array)
         :A_au: emitting area in au^2 (array)
         :dV: intrinsic line FWHM in km/s (array)
@@ -52,19 +52,17 @@ class slab:
         setup_grid: setup the wavelength grid
 
         :fine_wgrid: fine wavelength grid to evaluate the opacity
-        :obs_wgrid: the wavelength grid used to downsample the model
-        :R: the instrument resolving power (lambda/dlambda)
+        :obs_wgrid: wavelength grid used to downsample the model
+        :R: the instrumental resolving power
         
         ----------------------------------------------------------------
         To appropiately sample overlapping lines, make sure that the 
-        wavelength spacing in fine_wgrid is smaller than the equivalent
-        width of 1 km/s in microns. Ideally you want a few points per 
-        intrinsic width, and a fine dlambda<1e-5 micron usually works well.
+        wavelength spacing in fine_wgrid appropiately samples the intrinsic
+        line width. Ideally you want a few points per 
+        intrinsic width, dlambda<1e-5 micron usually works well for MIRI.
         
         To avoid a nan catastrophe, make sure that obs_wgrid does not span
-        outside the range of fine_wgrid. It is very expensive to assert this
-        at every iteration, hence it is the responsibility of the user to do so.
-                
+        outside the range of fine_wgrid. 
         """
         
         self.fine_wgrid = jnp.array(fine_wgrid)
@@ -87,21 +85,24 @@ class slab:
         self.conv_wind = jax.scipy.stats.norm.pdf(jnp.arange(2000)-1000, scale=sigma_conv)
                 
     def convolve(self):
-        '''
-        convolution routine (internal function called by iris.simulate)
+        """
+        convolution (internal function called by iris.simulate)
         user should not call this directly
-        '''
+        """
         self.convolved_flux = fftconvolve(self.flux_model, self.conv_wind, mode='same')
 
     def downsample(self):
-        '''
-        downsampling routine (internal function called by iris.simulate)
+        """
+        downsampling (internal function called by iris.simulate)
         user should not call this directly
-        '''
+        """
         self.downsampled_flux, _ = jnp.histogram(self.fine_wgrid, bins=self.hist_wgrid, weights=self.convolved_flux)
         self.downsampled_flux = self.downsampled_flux / self.scale_hist
         
     def simulate(self):
+        """
+        Simulate a convolved and downsampled spectrum
+        """
         # generate flux density
         self.flux_model = sp.compute_total_fdens(self.catalog, self.distance, self.A_au, 
                                                  self.T_ex, self.N_mol, self.dV, self.fine_wgrid)
