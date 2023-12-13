@@ -22,7 +22,8 @@ python -m pip install jax-metal
 The emission lines are modeled using isothermal slabs, with a detailed wavelength-dependent opacity
 treatment that accounts for overlapping lines and saturation effects. 
 
-iris is vectorized and optimized with jax, i.e. the code is dynamically compiled and can (but does not need to) be significantly sped-up using GPUs.
+iris is vectorized and optimized with jax, i.e. the code is dynamically compiled and can (but does not need to) be significantly sped-up using GPUs. 
+e.g. we can generate a full JWST MIRI MRS model spectrum including multiple species in < 5 ms
 
 One can use either a single slab, or a set of slabs to reproduce the effects of radial temperature and density gradients in the disk.
 
