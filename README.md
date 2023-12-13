@@ -8,7 +8,12 @@ pip install iris-jwst
 ## Requirements
 jax, jaxlib, astroquery, astropy, pandas
 
-![iris](https://github.com/munozcar/iris/tree/main/src/iris/iris.png)
+<p align='center'>
+  <img src="./src/iris/iris.png" width="793" height="549">
+  <br>
+</p>
+
+
 
 ## About
 
