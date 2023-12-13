@@ -9,6 +9,8 @@
 iris is a Python package that simulates IR molecular line emission from protoplanetary disks. 
 
 ## Installation
+Get the latest version from PyPi
+
 pip install iris-jwst
 
 ## Requirements
