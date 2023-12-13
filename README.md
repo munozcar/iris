@@ -5,6 +5,9 @@ iris is a Python package that simulates IR and mid-IR molecular line emission fr
 ## Installation
 pip install iris-jwst
 
+## Requirements
+jax, jaxlib, astroquery, astropy, pandas
+
 ## About
 
 The emission lines are modeled using isothermal slabs, with a detailed wavelength-dependent opacity
@@ -13,8 +16,6 @@ treatment that accounts for overlapping lines and saturation effects.
 iris is vectorized and optimized with jax, i.e. the code is dynamically compiled and can (but does not need to) be significantly sped-up using GPUs.
 
 One can use either a single slab, or a set of slabs to reproduce the effects of radial temperature and density gradients in the disk.
-
-Basic package requirements: numpy, scipy, astropy, jax, pandas. 
 
 #### Examples:
 To model emission from CO and H2O using a single slab for each:
