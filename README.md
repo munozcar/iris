@@ -73,7 +73,7 @@ N_mol = np.array([np.array([1e17]), # for CO
 A_au =  np.array([np.array([2.0]), # for CO
                   np.array([1.0])]) # for H2O
 
-# intrinsic line widths in km/s (line FWHM)
+# turbulent line widths in km/s (line FWHM)
 dV =    np.array([np.array([2.0]), # for CO
                   np.array([2.0])]) # for H2O
 
