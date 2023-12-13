@@ -2,6 +2,11 @@
 
 iris is a Python package that simulates IR and mid-IR molecular line emission from protoplanetary disks. 
 
+## Installation
+pip install iris-jwst
+
+## About
+
 The emission lines are modeled using isothermal slabs, with a detailed wavelength-dependent opacity
 treatment that accounts for overlapping lines and saturation effects. 
 
@@ -15,8 +20,17 @@ Basic package requirements: numpy, scipy, astropy, jax, pandas.
 To model emission from CO and H2O using a single slab for each:
 
 ```
-import iris as iris
 import numpy as np
+import iris as iris
+from iris import setup
+
+'''First time running iris, we need to download the HITRAN line list'''
+
+path_to_moldata = './your_path/HITRAN'  # path where we want to save the HITRAN data
+
+# Let's get the data for H2O and CO
+setup.setup_linelists('H2O', 'H2O', 1, path_to_moldata)
+setup.setup_linelists('CO', 'CO', 1, path_to_moldata)
 
 # Define a fine wavelength grid (in micron) to evaluate opacities
 fine_wgrid = np.arange(4.7,8.6,6e-5)
@@ -31,10 +45,7 @@ R = 3200
 '''This is just because of how JAX compiles dictionaries.'''
 '''So here e.g. we add CO before H2O'''
 
-# path to the HITRAN data folder
-path_to_HITRAN = './'
-
-slab = iris.slab(molecules=['CO', 'H2O'], wlow=4.8, whigh=26.0, path_to_hitran=path_to_HITRAN)
+slab = iris.slab(molecules=['CO', 'H2O'], wlow=4.8, whigh=26.0, path_to_moldata=path_to_moldata)
 
 # Distance to source
 distance = 120 # pc
