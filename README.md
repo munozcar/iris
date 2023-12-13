@@ -6,7 +6,7 @@
 
 # iris: InfraRed Isothermal Slabs
 
-iris is a Python package that simulates IR and mid-IR molecular line emission from protoplanetary disks. 
+iris is a Python package that simulates IR molecular line emission from protoplanetary disks. 
 
 ## Installation
 pip install iris-jwst
