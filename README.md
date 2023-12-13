@@ -1,3 +1,9 @@
+<p align='center'>
+  <img src="./src/iris/iris.png" width="250" height="250">
+  <br>
+</p>
+
+
 # iris: InfraRed Isothermal Slabs
 
 iris is a Python package that simulates IR and mid-IR molecular line emission from protoplanetary disks. 
@@ -7,12 +13,6 @@ pip install iris-jwst
 
 ## Requirements
 jax, jaxlib, astroquery, astropy, pandas
-
-<p align='center'>
-  <img src="./src/iris/iris.png" width="500" height="500">
-  <br>
-</p>
-
 
 
 ## About
