@@ -8,6 +8,8 @@ pip install iris-jwst
 ## Requirements
 jax, jaxlib, astroquery, astropy, pandas
 
+![iris](https://github.com/munozcar/iris/tree/main/src/iris/iris.png)
+
 ## About
 
 The emission lines are modeled using isothermal slabs, with a detailed wavelength-dependent opacity
