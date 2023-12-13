@@ -9,7 +9,7 @@ pip install iris-jwst
 jax, jaxlib, astroquery, astropy, pandas
 
 <p align='center'>
-  <img src="./src/iris/iris.png" width="793" height="549">
+  <img src="./src/iris/iris.png" width="500" height="500">
   <br>
 </p>
 
