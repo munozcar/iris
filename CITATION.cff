@@ -1,0 +1,11 @@
+cff-version: 0.2.9
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Muñoz-Romero"
+  given-names: "Carlos E."
+  orcid: "https://orcid.org/0000-0001-7152-9794"
+title: "iris: InfraRed Isothermal Slabs"
+version: 0.2.9
+doi: 10.5281/zenodo.10369000
+date-released: 2023-12-12
+url: "https://github.com/munozcar/iris"
