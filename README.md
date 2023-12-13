@@ -15,6 +15,7 @@ pip install iris-jwst
 jax, jaxlib, astroquery, astropy, pandas
 
 ### If you have mac with M processor:
+To install jax you need to use:
 python -m pip install jax-metal
 
 ## About
