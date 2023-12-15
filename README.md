@@ -17,7 +17,7 @@ pip install iris-jwst
 jax, jaxlib, astroquery, astropy, pandas
 
 ### In mac with M processor:
-1. Create and activate a new conda environment 
+1. Create and activate a new conda environment (Python >= 3.10)
 
 2. Install the following in order:
 
