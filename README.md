@@ -27,12 +27,13 @@ jax, jaxlib, astroquery, astropy, pandas
    conda install -c conda-forge six
    
    conda install -c conda-forge jax=0.4.11
-   
-   pip install jax-metal
+
+   pip install jax-metal   # optional
 
    conda install -c conda-forge astroquery
    conda install -c conda-forge astropy
-   
+   conda install -c conda-forge pandas
+
    pip install iris-jwst
 ```
 
