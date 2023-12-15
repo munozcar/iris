@@ -16,8 +16,19 @@ pip install iris-jwst
 ## Requirements
 jax, jaxlib, astroquery, astropy, pandas
 
-### jax in mac with M processor:
-python -m pip install jax-metal
+### In mac with M processor:
+1. Create and activate a new conda environment 
+
+2. Install the following in order:
+   conda install -c conda-forge numpy
+   conda install -c conda-forge six
+   conda install -c conda-forge jax=0.4.11
+   pip install jax-metal
+
+   conda install -c conda-forge astroquery
+   conda install -c conda-forge astropy
+   
+   pip install iris-jwst
 
 ## About
 
