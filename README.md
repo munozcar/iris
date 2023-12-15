@@ -16,27 +16,6 @@ pip install iris-jwst
 ## Requirements
 jax, jaxlib, astroquery, astropy, pandas
 
-### In mac with M processor:
-1. Create and activate a new conda environment (Python >= 3.10)
-
-2. Install the following in order:
-
-```
-   conda install -c conda-forge numpy
-   
-   conda install -c conda-forge six
-   
-   conda install -c conda-forge jax=0.4.11
-
-   pip install jax-metal   # optional
-
-   conda install -c conda-forge astroquery
-   conda install -c conda-forge astropy
-   conda install -c conda-forge pandas
-
-   pip install iris-jwst
-```
-
 ## About
 
 The emission lines are modeled using isothermal slabs, with a detailed wavelength-dependent opacity
