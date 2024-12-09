@@ -5,7 +5,7 @@ IRIS: (GPU-accelerated) IR spectrum modeling
 Evaluation of optical depths and intensities is jit-enabled and
 vectorized. 
 --------------------------------------------------------------
-Developed by Carlos E. Muñoz-Romero (2023)
+Developed by Carlos E. Romero-Mirza (2024)
 '''
 import jax
 jax.config.update("jax_enable_x64", True)
@@ -15,6 +15,7 @@ import astropy.constants as const
 import jax.numpy as jnp
 import numpy as np
 from functools import partial
+from jax.scipy.signal import fftconvolve
 
 # -------------------- Global constants ----------------------
 # for more efficient unit handling
@@ -38,6 +39,10 @@ k_B_cgs = (const.k_B.cgs).value
 micron_to_hz = (const.c/(1*u.micron)).to(u.Hz)
 # mass of the proton
 mp_cgs = const.m_p.cgs.value
+
+au_to_m = u.au.to(u.m)
+M_sun_to_kg = (u.M_sun).to(u.kg)
+
 # ----------------------------------------------------------
 
 # --------------- Main modeling code -----------------------
@@ -69,6 +74,60 @@ def dv_to_dlam(dv, lam_rest):
     lam =  -c_musec / (((dv*kms_to_mus*nu_rest)/c_musec) - nu_rest)
     return lam - lam_rest
 dv_to_dlam = jax.jit(dv_to_dlam)
+
+def keplerian_velocity(r, M_star):
+    """
+    Calculate the Keplerian velocity at radius r for a star of mass M_star.
+    """
+    G = 6.67430e-11  # Gravitational constant in m^3 kg^-1 s^-2
+    return (G * M_star / r)**0.5
+keplerian_velocity = jax.jit(keplerian_velocity)
+
+def line_of_sight_velocity(r, phi, inc, M_star):
+    """
+    Calculate the line-of-sight velocity for a given radius r, azimuthal angle phi,
+    inclination i, and stellar mass M_star.
+    """
+    v_k = keplerian_velocity(r, M_star)
+    return v_k * jnp.sin(inc) * jnp.cos(phi)
+line_of_sight_velocity = jax.jit(line_of_sight_velocity)
+
+def keplerian_broadening_kernel(r_in, r_out, M_star, inc, w_ref=14.0, dw_ref=6e-5):
+    """
+    Construct the Keplerian broadening kernel for a disk with inner radius r_in,
+    outer radius r_out, stellar mass M_star, and inclination i.
+    """
+    dr = 0.001 * au_to_m
+    dphi = 2*jnp.pi/10000
+
+    r_in = r_in * au_to_m
+    r_out = r_out * au_to_m
+
+    M_star = M_star * M_sun_to_kg
+
+    r = jnp.linspace(0.001, 50.1, 10000) * au_to_m
+    r = jnp.where(r<r_in, 0, r )
+    r = jnp.where(r>r_out, 0, r )
+
+    phi = jnp.arange(0, 2 * jnp.pi+dphi, dphi)
+    r_mesh, phi_mesh = jnp.meshgrid(r, phi)
+
+    # Calculate line-of-sight velocities
+    v_los = line_of_sight_velocity(r_mesh, phi_mesh, inc, M_star)
+    # Calculate wavelengths
+    lam_los = dv_to_dlam(v_los/1e3, w_ref)
+    # Calculate pixels
+    pix_los = lam_los/dw_ref
+
+    # Flatten the pixel array and create a histogram
+    pix_los_flat = pix_los.flatten()
+    hist, bin_edges = jnp.histogram(pix_los_flat, bins=np.arange(-500 , 500, 1), density=True)
+
+    # Calculate bin centers
+    bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+
+    return bin_centers, hist
+keplerian_broadening_kernel = jax.jit(keplerian_broadening_kernel)
 
 def evaluate_line_tau(fine_wgrid, sigma_lam, tau_cen, line_w):
     """
@@ -157,6 +216,32 @@ def compute_fdens(distance, fine_wgrid, total_tau, A_au, t_ex):
     return jnp.pi * (eq_radius/distance)**2 * ((aucm / pccm) ** 2) * J_profile(fine_wgrid, t_ex) * (1 - jnp.exp(-total_tau))
 compute_fdens = jax.jit(compute_fdens)
 
+def compute_fdens_keplerian(distance, fine_wgrid, total_tau, A_au, t_ex, r_in, M_star, inc):
+    """
+    compute_fdens: get flux density for one species, including keplerian profile
+    
+    :distance: distance to source in pc
+    :fine_wgrid: fine wavelength grid to evaluate tau 
+    :total_tau: tau as function of wavelength
+    :A_au: emitting area in au^2
+    :t_ex: excitation temperature in K
+    :r_in: innermost radii in au
+    :M_star: stellar mass in solar mass
+    :inc: inclination in radian
+
+    returns: flux density (erg cm-2 s-1 Hz-1)
+    """
+    fdens = compute_fdens(distance, fine_wgrid, total_tau, A_au, t_ex)
+    w_ref = jnp.median(fine_wgrid)
+    dw_ref = jnp.max(jnp.gradient(fine_wgrid))
+
+    r_out = (A_au/np.pi + r_in**2)**0.5
+    keplerian_pix, keplerian_kernel = keplerian_broadening_kernel(r_in, r_out, M_star, inc, w_ref, dw_ref)
+    fdens = fftconvolve(fdens, keplerian_kernel, mode='same')
+
+    return fdens 
+compute_fdens_keplerian = jax.jit(compute_fdens_keplerian)
+
 def compute_total_fdens(catalog, distance, A_au, t_ex, n_mol, dv, fine_wgrid):
     """
     compute_total_fdens: get total flux density in Jy
@@ -182,3 +267,32 @@ def compute_total_fdens(catalog, distance, A_au, t_ex, n_mol, dv, fine_wgrid):
         fdens += jnp.sum(fdens_i, axis=0) 
     return fdens * 1e23
 compute_total_fdens = jax.jit(compute_total_fdens)
+
+def compute_total_fdens_keplerian(catalog, distance, A_au, t_ex, n_mol, dv, r_in, M_star, inc, fine_wgrid):
+    """
+    compute_total_fdens_keplerian: get total flux density in Jy including Keplerian profile
+    
+    :catalog: HITRAN catalog (dict)
+    :distance: distance to source in pc
+    :A_au: emitting area in au^2
+    :t_ex: excitation temperature in K
+    :n_mol: column density in cm^-2
+    :dv: intrinsic line FWHM in km/s
+    :r_in: innermost radii in au
+    :M_star: stellar mass in solar mass
+    :inc: inclination in radian
+    :fine_wgrid: fine wavelength grid to evaluate tau 
+   
+    returns: flux density (Jy)
+    """
+    fdens = fine_wgrid*0.0
+    # evaluate total optical depth profile
+    total_tau = compute_total_tau(catalog, fine_wgrid, dv, t_ex, n_mol)
+    # loop over species
+    for i in range(len(catalog)):
+        # map over disk grid 
+        func = partial(compute_fdens_keplerian, distance, fine_wgrid)
+        fdens_i = jax.vmap(func)(total_tau[i], A_au[i], t_ex[i], r_in[i], M_star[i], inc[i])
+        fdens += jnp.sum(fdens_i, axis=0) 
+    return fdens * 1e23
+compute_total_fdens_keplerian = jax.jit(compute_total_fdens_keplerian)

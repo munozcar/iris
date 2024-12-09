@@ -2,7 +2,7 @@
 --------------------------------------------------------------
 IRIS: (GPU-accelerated) IR spectrum modeling
 --------------------------------------------------------------
-Developed by Carlos E. Muñoz-Romero (2023)
+Developed by Carlos E. Romero-Mirza (2024)
 '''
 
 import os
@@ -31,7 +31,7 @@ class slab:
         self.molecules = molecules   
         self.catalog, self.levels = setup_catalog(molecules, wlow, whigh, path=path_to_moldata)
         
-    def setup_disk(self, distance, T_ex, N_mol, A_au, dV):
+    def setup_disk(self, distance, T_ex, N_mol, A_au, dV, inc=0.0, M_star=1.0, r_in=0.1):
         """
         setup_disk: setup the disk physical structure
 
@@ -40,11 +40,17 @@ class slab:
         :N_mol: column density in cm^-2 (array)
         :A_au: emitting area in au^2 (array)
         :dV: intrinsic line FWHM in km/s (array)
+
+        :inc: disk inclination in degree (float), face-on = 0, experimental
+        :M_star: stellar mass in Msun (float), experimental
+        :r_in: inner gas radius in au (array), experimental. An ARRAY of the inner emission 
+               radius for EACH molecule included in the model
         
         The structure of each physical parameter must be an array of 
         shape (M, N), where N is the number of slabs and M the number of species. 
-        For now iris does not support using a different number of slabs 
-        for each species.
+        
+        For now iris does not support using a different number of temperature components 
+        for each species modeled simultaneously.
         
         """
         self.distance =  distance
@@ -52,6 +58,15 @@ class slab:
         self.T_ex = jnp.array(T_ex)
         self.N_mol = jnp.array(N_mol)
         self.A_au = jnp.array(A_au)
+        
+        self.inc = inc*np.pi/180.0 * jnp.ones_like(self.A_au)
+        self.M_star = M_star * jnp.ones_like(self.A_au)
+        self.r_in = jnp.ones_like(self.A_au)
+        self.r_in = self.r_in.at[:,0].set(r_in)
+        for i in range(1, self.A_au.shape[1]):
+            self.r_in = self.r_in.at[:,i].set( (self.A_au[:, i-1]/jnp.pi + self.r_in[:,i-1]**2)**0.5 )
+
+            
         
     def setup_grid(self, fine_wgrid, obs_wgrid, R):
         """
@@ -62,7 +77,7 @@ class slab:
         :R: the instrumental resolving power
         
         ----------------------------------------------------------------
-        To appropiately sample overlapping lines, make sure that the 
+        To correctly sample overlapping lines, make sure that the 
         wavelength spacing in fine_wgrid appropiately samples the intrinsic
         line width. Ideally you want a few points per 
         intrinsic width, dlambda<1e-5 micron usually works well for MIRI.
@@ -112,6 +127,21 @@ class slab:
         # generate flux density
         self.flux_model = sp.compute_total_fdens(self.catalog, self.distance, self.A_au, 
                                                  self.T_ex, self.N_mol, self.dV, self.fine_wgrid)
+        # convolve with instrument psf
+        self.convolve()
+        # downsample to grid
+        self.downsample()
+
+    def simulate_keplerian(self):
+        """
+        Simulate a convolved and downsampled spectrum including Keplerian line profiles
+        Requires inc, M_star, and r_in to be set up first.
+        Experimental
+        """
+        # generate flux density
+        self.flux_model = sp.compute_total_fdens_keplerian(self.catalog, self.distance, self.A_au, 
+                                         self.T_ex, self.N_mol, self.dV, self.r_in,
+                                         self.M_star, self.inc, self.fine_wgrid)
         # convolve with instrument psf
         self.convolve()
         # downsample to grid

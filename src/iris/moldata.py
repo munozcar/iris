@@ -15,7 +15,7 @@ The class MolData reads and parses the molecular data
 
 """
 
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 import numpy as np
 
 try:
@@ -193,8 +193,8 @@ class MolData:
 def setup_catalog(molecule_names, wlow, whigh, wpad=0.01, path='./'):
     path_to_moldata = path+'/'
     # initialize dictionary
-    parameters = {}
-    levels = {}
+    parameters = OrderedDict()
+    levels = OrderedDict()
     
     for mol_name in molecule_names:
         
