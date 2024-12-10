@@ -1,5 +1,5 @@
 <p align='center'>
-  <img src="./src/iris/iris.png" width="250" height="250">
+  <img src="./src/iris/Images/iris.png" width="250" height="250">
   <br>
 </p>
 
