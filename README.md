@@ -24,3 +24,4 @@ treatment that accounts for overlapping lines and saturation effects.
 iris is vectorized and optimized with jax, i.e. the code is dynamically compiled and can (but does not need to) be significantly sped-up using GPUs. 
 e.g. we can generate a full JWST MIRI MRS model spectrum including multiple species in < 5 ms
 
+See the wiki for a more detailed explanation 
